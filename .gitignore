@@ -1,0 +1,51 @@
+# Maven / build output
+**/target/
+.mvn/timing.properties
+
+# Logs and runtime files
+*.log
+*.pid
+logs/
+**/logs/
+*.dump
+*.dumpstream
+
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+*.local
+application-local.yml
+application-local.yaml
+application-*.local.yml
+application-*.local.yaml
+
+# IDE / OS files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local databases and mounted data
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+*.mv.db
+data/
+**/data/
+
+# Node / frontend artifacts, useful if the AI course project is copied in later
+node_modules/
+dist/
+build/
+coverage/
+.npm/
+.pnpm-store/
+
+# Personal or local-only project references
+rfs/
+pet-runs/
+.agents/
+.codex/

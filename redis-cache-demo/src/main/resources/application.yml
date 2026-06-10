@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: redis-cache-demo
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+demo:
+  cache:
+    product-ttl: 5m
+    product-missing-ttl: 30s
+    product-ttl-jitter: 30s
