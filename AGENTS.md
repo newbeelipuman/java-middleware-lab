@@ -37,6 +37,10 @@ exists in a subdirectory.
 
 - Update documentation when behavior, configuration, or usage changes.
 - Keep examples concise and consistent with the current implementation.
+- Write public-facing documentation in a natural developer voice. Avoid
+  AI-flavored wording, assistant/tool process descriptions, exaggerated praise,
+  and phrases that make the content look generated rather than maintained by the
+  project owner.
 
 ## Public Repository Safety
 
