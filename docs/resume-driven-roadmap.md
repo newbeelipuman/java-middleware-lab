@@ -175,9 +175,19 @@
 ```text
 MySQL 幂等落库 -> Elasticsearch 搜索 -> Nacos 拆服务 -> Sentinel 接口保护 -> XXL-JOB 补偿任务 -> Prometheus/Grafana 观测
 ```
-推荐权重和抉择点已写入 `docs/rocketmq-enterprise-development-flow.md`。RocketMQ 主线 Stage 1-6 已完成：MySQL 幂等落库、Elasticsearch 医生搜索、Nacos 服务注册与配置管理、Sentinel 接口保护、XXL-JOB ES 索引补偿、Prometheus/Grafana 本地观测均已留下测试、联调和演练记录。后续不要继续扩张 RocketMQ 范围，也不要引入新的大型中间件。
+推荐权重和抉择点已写入 `docs/rocketmq-enterprise-development-flow.md`。RocketMQ
+主线 Stage 1-6 已完成：MySQL 幂等落库、Elasticsearch 医生搜索、Nacos 服务
+注册与配置管理、Sentinel 接口保护、XXL-JOB ES 索引补偿、Prometheus/Grafana
+本地观测均已留下测试、联调和演练记录。这些内容作为 L1 学习基线保留；后续
+可靠发布、消费状态机、真实调度、压测和可观测性深化按
+`docs/middleware-specialization-roadmap.md` 在独立 V2 目录推进。
 
 ## 有限额度下的后续档期
+
+> 历史说明：本节记录 `2026-06-09` 当时按有限额度收口项目的安排。当前后续
+> 开发已经改为完整专项完善，不再受该额度方案约束。新的执行范围、完成级别、
+> 验收标准和大项目迁移合同统一以
+> `docs/middleware-specialization-roadmap.md` 为准。
 
 按当前日期 `2026-06-09` 和用户预计仅剩约 35% 项目额度，后续安排收紧为三段：
 
