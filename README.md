@@ -21,6 +21,18 @@ RocketMQ 开发流程记录见 [docs/rocketmq-enterprise-development-flow.md](./
 结合现有简历补齐能力证据的路线见
 [docs/resume-driven-roadmap.md](./docs/resume-driven-roadmap.md)。
 
+后续专项完善以
+[Java 中间件专项完善路线](./docs/middleware-specialization-roadmap.md)
+为唯一总路线。该路线覆盖 Redis 压测与高可用、RocketMQ 可靠发布和消费状态机、
+Elasticsearch 索引生命周期、Nacos/Sentinel 治理、XXL-JOB Admin，以及
+Prometheus/Loki/Tempo 可观测性闭环。原有 Demo 保留为学习基线，专项能力在独立
+V2 目录实现。
+
+已完成 Demo 后的复习材料：
+
+- [中间件使用场景与面试复盘卡片](./docs/middleware-learning-cards.md)：整理 Redis、RocketMQ、MySQL、Elasticsearch、Nacos、Sentinel、XXL-JOB、Prometheus/Grafana 的使用原因、项目场景、企业级用法、生产差距和面试问答。
+- [中间件 Demo 技术复盘](./docs/middleware-demo-technical-review.md)：说明当前验证程度、可迁移能力和不能夸大的边界。
+
 ## 市场说明
 
 中间件技能不会产生可以单独归因的固定涨薪比例。招聘定价通常同时受城市、

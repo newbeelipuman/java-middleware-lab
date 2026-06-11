@@ -190,7 +190,14 @@ XXL-JOB 适合做补偿，不适合替代主链路。典型任务包括失败通
 
 ## 下一步执行建议
 
-RocketMQ 主线 Stage 1-6 已完成：MySQL 幂等落库、Elasticsearch 医生搜索、Nacos 注册配置、Sentinel 接口保护、XXL-JOB ES 索引补偿、Prometheus/Grafana 本地观测均已有代码、测试、Docker/HTTP 验证和实现日志。后续不再继续堆 RocketMQ 相关中间件，优先把有限额度用于 Redis 缓存穿透、击穿、雪崩最小补强和简历证据整理。
+> 历史说明：下方建议记录 `2026-06-09` 的有限额度收口方案。当前原 Demo
+> 作为 L1 学习基线保留，后续 RocketMQ 可靠发布、消费状态机、死信恢复和
+> 可观测性深化统一按 `docs/middleware-specialization-roadmap.md` 在独立 V2
+> 目录推进。
+
+RocketMQ 主线 Stage 1-6 已完成：MySQL 幂等落库、Elasticsearch 医生搜索、
+Nacos 注册配置、Sentinel 接口保护、XXL-JOB ES 索引补偿、Prometheus/Grafana
+本地观测均已有代码、测试、Docker/HTTP 验证和实现日志。
 
 后续可复制提示词：
 
