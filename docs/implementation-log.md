@@ -839,3 +839,66 @@ redis-cli TTL demo:product:1
 ```text
 基于当前仓库已完成的 Redis 风险补强和 RocketMQ 主线 Stage 1-6，生成一份简历可写表述和面试追问清单。只允许引用仓库中已经验证的代码、测试、Docker/HTTP 输出和实现日志；不要写生产高可用、百万并发、未经压测的 P95/P99、线上调优经验或 Kubernetes 经验。输出应包含：3-5 条项目表述、每条对应的证据文件、可能面试追问、我必须能口述的技术边界。
 ```
+
+## 2026-06-11：Stage 0 仓库治理与 Redis V2 启动
+
+### 目标
+
+冻结 `redis-cache-demo/` 和 `rocketmq-notification-demo/` 作为 L1 学习基线，
+后续专项能力放入独立 V2 工程，避免原始 Demo、专项实验、压测证据和迁移合同混在一起。
+
+### Stage 0 治理
+
+- 新增 `docs/middleware-specialization-roadmap.md`，作为后续专项完善唯一总路线。
+- 新增 `docs/middleware-demo-technical-review.md` 和 `docs/middleware-learning-cards.md`，
+  记录当前 L1 baseline 已验证能力和不能夸大的边界。
+- 新增公共证据目录：
+  - `docs/benchmark-reports/`
+  - `docs/failure-drills/`
+  - `docs/architecture-decisions/`
+  - `docs/migration-contracts/`
+- `.gitignore` 继续隔离 `中间件理解情况.txt`、`rfs/`、本地求职交接资料、运行日志和密钥文件。
+- 创建并推送 `demo-baseline-v1` 标签，指向 Stage 0 治理提交。
+
+### Redis V2 启动
+
+- 新增 `redis-cache-specialization-v2/` 独立 Spring Boot 3.5.7 工程。
+- 独立端口：应用 `8090`，Redis `6380`，MySQL `3307`。
+- 新增 `CachePolicy` 合同，预留 `NONE`、`CACHE_ASIDE`、`LOCAL_MUTEX`、`REDISSON_LOCK`、`LOGICAL_EXPIRE`。
+- 新增 `/api/status`，用于确认 V2 工程身份、来源 baseline 和计划策略。
+- 当前只完成工程骨架，不实现 Redis 压测、Redisson 锁、逻辑过期、Sentinel 或 Cluster。
+
+### 验证结果
+
+```text
+cd C:\Users\PC\Desktop\中间件学习\redis-cache-demo
+mvn test
+=> Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+
+cd C:\Users\PC\Desktop\中间件学习\rocketmq-notification-demo
+mvn test
+=> Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+```
+
+公开仓库安全检查：
+
+```text
+git ls-files "中间件理解情况.txt" "rfs/*" "*.env" "*.log" "*.db" "*.sqlite"
+=> no tracked files
+```
+
+### 已知限制
+
+- Redis V2 目前只是可构建骨架，不具备 L2 专项能力。
+- 尚未创建 MySQL/Flyway 固定数据集、k6 脚本、压测报告或故障演练记录。
+- 后续 Stage 1 实现前，不能把 Redis 压测、高可用、Redisson 分布式锁或逻辑过期写入简历。
+
+### 下一阶段交接提示词
+
+```text
+继续 Stage 1：Redis 缓存、并发与高可用。基于当前 `redis-cache-specialization-v2/`
+骨架和 `demo-baseline-v1` 标签，不修改 `redis-cache-demo/` baseline。实现 MySQL + Flyway
+固定脱敏班表数据集、`CachePolicy` 五种策略、缓存失效任务、Redis 降级指标和 k6
+压测脚本；先完成最小可测闭环，再加入 Sentinel/Cluster profile。每一步都要补测试、
+README、benchmark report、failure drill、migration contract 和 implementation log。
+```

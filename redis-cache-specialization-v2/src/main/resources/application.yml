@@ -1,0 +1,23 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: redis-cache-specialization-v2
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/redis_cache_specialization_v2?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: redis_v2
+    password: redis_v2
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6380
+      timeout: 200ms
+  flyway:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

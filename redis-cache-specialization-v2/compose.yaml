@@ -1,0 +1,27 @@
+services:
+  redis-v2-mysql:
+    image: mysql:8.4
+    container_name: redis-cache-specialization-v2-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: redis_cache_specialization_v2
+      MYSQL_USER: redis_v2
+      MYSQL_PASSWORD: redis_v2
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis-v2-redis:
+    image: redis:7.4
+    container_name: redis-cache-specialization-v2-redis
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
