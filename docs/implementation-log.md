@@ -944,3 +944,40 @@ git ls-files "中间件理解情况.txt" "rfs/*" "*.env" "*.log" "*.db" "*.sqlit
 与双应用实例 Redisson 锁竞争。记录资源、吞吐、P50/P95/P99、错误率、回源次数和
 客户端错误窗口；未验证的结论继续保留为限制。
 ```
+
+## 2026-06-11：RocketMQ V2 Stage 2 可靠发布与消费
+
+### 已实现
+
+- 新建独立 `rocketmq-reliability-specialization-v2/`，不修改 RocketMQ baseline。
+- 固化 `DomainEventEnvelope<T>`，消费者按事件类型和版本路由，未知版本进入隔离表。
+- 默认 Outbox 路径将换班请求与事件同库提交，支持抢占、超时接管、Fencing、
+  指数退避、DEAD 和人工恢复。
+- `transaction-message` Profile 使用半消息、本地事务、事务事实表和 Broker 回查；
+  数据库事实不可读取时返回 `UNKNOWN`。
+- 每个事件建立 SMS、EMAIL、IN_APP 三个独立消费任务，以 `eventId + channel`
+  唯一约束实现渠道级幂等。
+- 下游使用相同幂等键，覆盖副作用已成功但调用方收到超时的不确定结果。
+- 增加真实 DLQ 监听、隔离查询、人工重放和重复重放的业务幂等防护。
+- 增加发布、消费、重复、失败等 Micrometer 指标，以及 k6 和 Broker 故障脚本。
+
+### 验证边界
+
+- 自动化测试覆盖事件合同、未知版本隔离、事务回查、MySQL 原子提交、并发抢占、
+  超时接管、旧 Worker Fencing 和下游幂等。
+- Compose 使用 MySQL 8.4、RocketMQ 5.3.2 和 k6 1.8.0。
+- 真实联调验证正常事件三渠道成功、下游超时后幂等恢复、Broker 暂停后 Outbox
+  自动补发、事务消息 COMMIT 事实与三渠道消费、Poison Message 两次重投后进入 DLQ。
+- k6 以 3 VU、5 秒运行三轮，HTTP 错误率均为 0%，P95 为
+  `89.01/95.53/100.07 ms`；该结果只用于本地短测，不作为容量结论。
+- 单 Broker 和本地短时压测不证明生产高可用、精确一次、容量或 SLA。
+- Outbox 是迁移推荐方案；事务消息仅保留为对照实现，大项目只能选择一条主链路。
+
+### 下一阶段交接
+
+```text
+进入 Stage 3 Elasticsearch 专项前，先确认 RocketMQ V2 的真实 Compose 联调、
+Broker 暂停恢复、Poison Message/DLQ 和三轮 k6 摘要已经记录。Stage 3 只建设
+MySQL 事实源、事件增量同步、PIT + search_after、版本索引与 Alias 原子切换，
+不得把换班教学模型迁入大项目。
+```

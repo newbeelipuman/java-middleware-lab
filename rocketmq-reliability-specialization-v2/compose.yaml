@@ -1,0 +1,66 @@
+services:
+  mq-v2-mysql:
+    image: mysql:8.4
+    container_name: rocketmq-reliability-v2-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: rocketmq_reliability_v2
+      MYSQL_USER: mq_v2
+      MYSQL_PASSWORD: mq_v2
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - mq-v2-mysql-data:/var/lib/mysql
+    networks: [mq-v2]
+
+  mq-v2-namesrv:
+    image: apache/rocketmq:5.3.2
+    container_name: rocketmq-reliability-v2-namesrv
+    command: sh mqnamesrv
+    ports:
+      - "9877:9876"
+    networks: [mq-v2]
+
+  mq-v2-broker:
+    image: apache/rocketmq:5.3.2
+    container_name: rocketmq-reliability-v2-broker
+    depends_on:
+      - mq-v2-namesrv
+    environment:
+      NAMESRV_ADDR: mq-v2-namesrv:9876
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.3.2/conf/broker.conf
+    ports:
+      - "11909:11909"
+      - "11911:11911"
+      - "11912:11912"
+    volumes:
+      - ./rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.2/conf/broker.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "ps -ef | grep -q '[o]rg.apache.rocketmq.broker.BrokerStartup'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [mq-v2]
+
+  mq-v2-k6:
+    image: grafana/k6:1.8.0
+    profiles: [benchmark]
+    working_dir: /scripts
+    volumes:
+      - ./k6:/scripts:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["run", "/scripts/create-shift.js"]
+
+networks:
+  mq-v2:
+    name: rocketmq-reliability-v2-network
+
+volumes:
+  mq-v2-mysql-data:
+    name: rocketmq-reliability-v2-mysql-data
