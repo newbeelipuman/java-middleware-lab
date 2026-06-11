@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:mq-v2;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  flyway:
+    enabled: false
+app:
+  messaging-enabled: false
+  publish-mode: outbox
+  topic: test
+  tag: test
+  consumer-group: test
+  worker-id: test
+  claim-batch-size: 10
+  processing-timeout: 10s
+  max-retries: 3

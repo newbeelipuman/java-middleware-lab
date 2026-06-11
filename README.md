@@ -33,6 +33,11 @@ V2 目录实现。
 - [redis-cache-specialization-v2](./redis-cache-specialization-v2/)：独立端口、独立
   Compose 资源和 `CachePolicy` 合同，用于后续 Redis 并发、压测和故障恢复实验。
 
+当前 RocketMQ 可靠性专项位于：
+
+- [rocketmq-reliability-specialization-v2](./rocketmq-reliability-specialization-v2/)：
+  独立 Outbox、事务消息对照、消费任务状态机、下游幂等和死信重放实验。
+
 已完成 Demo 后的复习材料：
 
 - [中间件使用场景与面试复盘卡片](./docs/middleware-learning-cards.md)：整理 Redis、RocketMQ、MySQL、Elasticsearch、Nacos、Sentinel、XXL-JOB、Prometheus/Grafana 的使用原因、项目场景、企业级用法、生产差距和面试问答。

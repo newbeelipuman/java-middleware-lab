@@ -1,0 +1,39 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: rocketmq-reliability-specialization-v2
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3308/rocketmq_reliability_v2?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: mq_v2
+    password: mq_v2
+  flyway:
+    enabled: true
+
+rocketmq:
+  name-server: 127.0.0.1:9877
+  producer:
+    group: shift-reliability-producer
+    send-message-timeout: 1500
+
+app:
+  publish-mode: outbox
+  messaging-enabled: true
+  topic: shift-change-events
+  tag: shift-change-requested
+  consumer-group: shift-notification-consumer
+  worker-id: ${HOSTNAME:local-worker}
+  claim-batch-size: 20
+  processing-timeout: 15s
+  max-retries: 5
+  outbox-delay: 500
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: rocketmq-reliability-specialization-v2
