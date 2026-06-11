@@ -28,6 +28,7 @@ import study.middleware.mqreliability.notification.DownstreamResultUnknownExcept
 import study.middleware.mqreliability.notification.NotificationChannel;
 import study.middleware.mqreliability.outbox.OutboxEvent;
 import study.middleware.mqreliability.outbox.OutboxRepository;
+import study.middleware.mqreliability.quarantine.QuarantineRepository;
 import study.middleware.mqreliability.shift.CreateShiftChangeRequest;
 import study.middleware.mqreliability.shift.ShiftChange;
 import study.middleware.mqreliability.shift.ShiftChangeRepository;
@@ -57,6 +58,8 @@ class MySqlReliabilityIntegrationTest {
 
     @BeforeEach
     void clean() {
+        jdbc.update("DELETE FROM quarantined_message");
+        jdbc.update("DELETE FROM transaction_event_fact");
         jdbc.update("DELETE FROM downstream_delivery");
         jdbc.update("DELETE FROM notification_task");
         jdbc.update("DELETE FROM outbox_event");
@@ -140,6 +143,16 @@ class MySqlReliabilityIntegrationTest {
                 SELECT COUNT(*) FROM downstream_delivery
                 WHERE idempotency_key='evt-timeout:EMAIL'
                 """, Integer.class)).isOne();
+    }
+
+    @Test
+    void replayCompareAndSetAllowsOnlyOneOperatorForTheObservedVersion() {
+        QuarantineRepository quarantine = new QuarantineRepository(jdbc);
+        quarantine.save("msg-replay", "evt-replay", "ROCKETMQ_DLQ", "{}");
+        var record = quarantine.findAll().get(0);
+
+        assertThat(quarantine.markReplayed(record.id(), record.replayCount())).isTrue();
+        assertThat(quarantine.markReplayed(record.id(), record.replayCount())).isFalse();
     }
 
     private void insertOutbox(String eventId, Instant now) {
