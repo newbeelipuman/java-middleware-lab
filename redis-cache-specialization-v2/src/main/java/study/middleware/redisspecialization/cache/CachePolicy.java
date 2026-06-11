@@ -1,9 +1,12 @@
 package study.middleware.redisspecialization.cache;
 
-public enum CachePolicy {
-    NONE,
-    CACHE_ASIDE,
-    LOCAL_MUTEX,
-    REDISSON_LOCK,
-    LOGICAL_EXPIRE
+import java.util.Optional;
+
+import study.middleware.redisspecialization.schedule.StaffSchedule;
+
+public interface CachePolicy {
+
+    CachePolicyType type();
+
+    Optional<StaffSchedule> find(long scheduleId);
 }

@@ -8,13 +8,13 @@ class CachePolicyTest {
 
     @Test
     void exposesPlannedStageOnePolicies() {
-        assertThat(CachePolicy.values())
+        assertThat(CachePolicyType.values())
                 .containsExactly(
-                        CachePolicy.NONE,
-                        CachePolicy.CACHE_ASIDE,
-                        CachePolicy.LOCAL_MUTEX,
-                        CachePolicy.REDISSON_LOCK,
-                        CachePolicy.LOGICAL_EXPIRE
+                        CachePolicyType.NONE,
+                        CachePolicyType.CACHE_ASIDE,
+                        CachePolicyType.LOCAL_MUTEX,
+                        CachePolicyType.REDISSON_LOCK,
+                        CachePolicyType.LOGICAL_EXPIRE
                 );
     }
 }

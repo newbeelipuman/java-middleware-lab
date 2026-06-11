@@ -1,0 +1,40 @@
+x-redis-cluster-node: &redis-cluster-node
+  image: redis:7.4
+  command: ["redis-server", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--cluster-node-timeout", "5000", "--appendonly", "yes"]
+
+services:
+  redis-cluster-1:
+    <<: *redis-cluster-node
+    ports: ["7000:6379"]
+  redis-cluster-2:
+    <<: *redis-cluster-node
+    ports: ["7001:6379"]
+  redis-cluster-3:
+    <<: *redis-cluster-node
+    ports: ["7002:6379"]
+  redis-cluster-4:
+    <<: *redis-cluster-node
+    ports: ["7003:6379"]
+  redis-cluster-5:
+    <<: *redis-cluster-node
+    ports: ["7004:6379"]
+  redis-cluster-6:
+    <<: *redis-cluster-node
+    ports: ["7005:6379"]
+
+  redis-cluster-init:
+    image: redis:7.4
+    depends_on:
+      - redis-cluster-1
+      - redis-cluster-2
+      - redis-cluster-3
+      - redis-cluster-4
+      - redis-cluster-5
+      - redis-cluster-6
+    entrypoint: ["sh", "-c"]
+    command:
+      - >-
+        sleep 5 && yes yes | redis-cli --cluster create
+        redis-cluster-1:6379 redis-cluster-2:6379 redis-cluster-3:6379
+        redis-cluster-4:6379 redis-cluster-5:6379 redis-cluster-6:6379
+        --cluster-replicas 1

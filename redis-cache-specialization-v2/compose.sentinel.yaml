@@ -1,0 +1,39 @@
+services:
+  redis-sentinel-master:
+    image: redis:7.4
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6381:6379"]
+
+  redis-sentinel-replica-1:
+    image: redis:7.4
+    command: ["redis-server", "--replicaof", "redis-sentinel-master", "6379"]
+    depends_on: [redis-sentinel-master]
+
+  redis-sentinel-replica-2:
+    image: redis:7.4
+    command: ["redis-server", "--replicaof", "redis-sentinel-master", "6379"]
+    depends_on: [redis-sentinel-master]
+
+  redis-sentinel-1:
+    image: redis:7.4
+    entrypoint: ["sh", "-c"]
+    command: ["cp /config/sentinel.conf /tmp/sentinel.conf && redis-sentinel /tmp/sentinel.conf"]
+    volumes: ["./redis/sentinel.conf:/config/sentinel.conf:ro"]
+    ports: ["26379:26379"]
+    depends_on: [redis-sentinel-master, redis-sentinel-replica-1, redis-sentinel-replica-2]
+
+  redis-sentinel-2:
+    image: redis:7.4
+    entrypoint: ["sh", "-c"]
+    command: ["cp /config/sentinel.conf /tmp/sentinel.conf && redis-sentinel /tmp/sentinel.conf"]
+    volumes: ["./redis/sentinel.conf:/config/sentinel.conf:ro"]
+    ports: ["26380:26379"]
+    depends_on: [redis-sentinel-master, redis-sentinel-replica-1, redis-sentinel-replica-2]
+
+  redis-sentinel-3:
+    image: redis:7.4
+    entrypoint: ["sh", "-c"]
+    command: ["cp /config/sentinel.conf /tmp/sentinel.conf && redis-sentinel /tmp/sentinel.conf"]
+    volumes: ["./redis/sentinel.conf:/config/sentinel.conf:ro"]
+    ports: ["26381:26379"]
+    depends_on: [redis-sentinel-master, redis-sentinel-replica-1, redis-sentinel-replica-2]

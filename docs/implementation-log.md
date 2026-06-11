@@ -900,5 +900,47 @@ git ls-files "中间件理解情况.txt" "rfs/*" "*.env" "*.log" "*.db" "*.sqlit
 骨架和 `demo-baseline-v1` 标签，不修改 `redis-cache-demo/` baseline。实现 MySQL + Flyway
 固定脱敏班表数据集、`CachePolicy` 五种策略、缓存失效任务、Redis 降级指标和 k6
 压测脚本；先完成最小可测闭环，再加入 Sentinel/Cluster profile。每一步都要补测试、
-README、benchmark report、failure drill、migration contract 和 implementation log。
+ README、benchmark report、failure drill、migration contract 和 implementation log。
+```
+
+## 2026-06-11：Redis V2 Stage 1 最小可测闭环
+
+### 已实现
+
+- MySQL 8.4 作为事实数据源，Flyway 创建班表与缓存失效任务表并初始化固定脱敏数据。
+- `CachePolicy` 提供 `NONE`、`CACHE_ASIDE`、`LOCAL_MUTEX`、`REDISSON_LOCK`、
+  `LOGICAL_EXPIRE` 五种独立策略。
+- 缓存旁路包含空值、TTL 抖动；本地互斥和 Redisson 锁都在回源前二次检查。
+- Redisson 支持显式租约和 `lock-lease=0` watchdog，解锁前检查当前线程所有权。
+- 逻辑过期返回有上限的旧值，并由持锁异步线程执行一次重建。
+- 更新班表与创建失效任务同库提交；删除失败按指数退避重试，最终可进入 `DEAD`。
+- Redis 故障使用有界 MySQL 回退，容量耗尽时显式返回 503。
+- 暴露缓存结果、数据库回源、锁等待、失效任务和降级 Micrometer 指标。
+
+### 验证结果
+
+- Maven 测试通过，包括并发合并、旧值回写竞态、降级、失效重试，以及真实
+  MySQL 8.4 + Redis 7.4 Testcontainers 集成链路。
+- 五种策略均通过 HTTP 读取固定数据；更新后失效任务到达 `SUCCESS`，再次读取返回新版本。
+- Redis 停机时降级读取在本机实验中耗时 `126 ms`；停机期间更新产生一次失效失败，
+  Redis 恢复后任务自动重试成功。
+- Sentinel 本地拓扑从 `redis-sentinel-master:6379` 提升到副本 `172.23.0.4:6379`。
+- 六节点 Cluster 为 `cluster_state:ok`，`16384` 槽位全部正常，普通多键命令返回
+  `CROSSSLOT`。
+
+### 已知限制
+
+- 尚未完成可比较的三轮 k6 矩阵，因此不记录吞吐、P95/P99 或性能提升。
+- Sentinel 和 Cluster 当前只验证拓扑，尚未通过 Spring 应用客户端测量错误窗口。
+- 尚未启动两个应用实例验证跨实例 Redisson 锁竞争。
+- Spring Boot 依赖管理提供的 Flyway 在 MySQL 8.4 集成测试中迁移成功，但日志提示
+  其声明的最新受支持 MySQL 版本为 8.1；后续升级前需要持续回归。
+
+### 下一阶段交接提示词
+
+```text
+继续 Redis V2 Stage 1 验收，不进入 RocketMQ。先完成 k6 冷缓存、热缓存、穿透、
+热点失效和恢复场景的三轮可比实验，再增加 Sentinel/Cluster Spring 客户端 profile
+与双应用实例 Redisson 锁竞争。记录资源、吞吐、P50/P95/P99、错误率、回源次数和
+客户端错误窗口；未验证的结论继续保留为限制。
 ```

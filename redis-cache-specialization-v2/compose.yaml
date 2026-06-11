@@ -14,6 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    volumes:
+      - redis-v2-mysql-data:/var/lib/mysql
 
   redis-v2-redis:
     image: redis:7.4
@@ -25,3 +27,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-v2-redis-data:/data
+
+  redis-v2-k6:
+    image: grafana/k6:1.8.0
+    profiles: ["benchmark"]
+    working_dir: /scripts
+    volumes:
+      - ./k6:/scripts:ro
+    environment:
+      BASE_URL: http://host.docker.internal:8090
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: ["run", "/scripts/schedule-read.js"]
+
+volumes:
+  redis-v2-mysql-data:
+    name: redis-cache-specialization-v2-mysql-data
+  redis-v2-redis-data:
+    name: redis-cache-specialization-v2-redis-data

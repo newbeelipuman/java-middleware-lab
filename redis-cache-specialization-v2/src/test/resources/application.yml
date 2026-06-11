@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:redisv2;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  flyway:
+    enabled: false
+
+app:
+  cache:
+    key-prefix: "test:schedule:"
+    ttl: 5m
+    ttl-jitter: 0s
+    missing-ttl: 30s
+    logical-ttl: 30s
+    logical-stale-limit: 2m
+    lock-wait: 100ms
+    lock-lease: 1s
+    database-fallback-permits: 2
+  invalidation:
+    scheduling-enabled: false
+    batch-size: 10
+    max-retries: 3
+  redisson:
+    address: "redis://127.0.0.1:6380"

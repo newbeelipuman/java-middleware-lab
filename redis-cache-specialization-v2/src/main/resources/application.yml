@@ -14,10 +14,31 @@ spring:
       port: 6380
       timeout: 200ms
   flyway:
-    enabled: false
+    enabled: true
+
+app:
+  cache:
+    key-prefix: "middleware:v2:schedule:"
+    ttl: 5m
+    ttl-jitter: 30s
+    missing-ttl: 30s
+    logical-ttl: 30s
+    logical-stale-limit: 2m
+    lock-wait: 200ms
+    lock-lease: 3s
+    database-fallback-permits: 8
+  invalidation:
+    fixed-delay: 5s
+    batch-size: 50
+    max-retries: 8
+  redisson:
+    address: "redis://127.0.0.1:6380"
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: redis-cache-specialization-v2
